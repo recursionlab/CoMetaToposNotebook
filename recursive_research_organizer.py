@@ -240,21 +240,29 @@ class RecursiveResearchOrganizer(App):
     
     def watch_fire_level(self, fire_level: float) -> None:
         """Update fire display when fire level changes"""
-        fire_display = self.query_one("#fire_display", Static)
-        fire_display.update(f"🔥 Fire Level: {fire_level:.2f}")
-        
-        # Update CSS class based on fire level
-        if fire_level > 0.7:
-            fire_display.add_class("fire-high")
-        elif fire_level > 0.4:
-            fire_display.add_class("fire-medium")
-        else:
-            fire_display.add_class("fire-low")
+        try:
+            fire_display = self.query_one("#fire_display", Static)
+            fire_display.update(f"🔥 Fire Level: {fire_level:.2f}")
+            
+            # Update CSS class based on fire level
+            if fire_level > 0.7:
+                fire_display.add_class("fire-high")
+            elif fire_level > 0.4:
+                fire_display.add_class("fire-medium")
+            else:
+                fire_display.add_class("fire-low")
+        except:
+            # Widget not ready yet, ignore
+            pass
     
     def watch_current_phase(self, phase: int) -> None:
         """Update phase display"""
-        phase_display = self.query_one("#phase_display", Static)
-        phase_display.update(f"📊 Phase: {phase}")
+        try:
+            phase_display = self.query_one("#phase_display", Static)
+            phase_display.update(f"📊 Phase: {phase}")
+        except:
+            # Widget not ready yet, ignore
+            pass
     
     def on_mount(self):
         """Initialize the app"""
@@ -263,4 +271,3 @@ class RecursiveResearchOrganizer(App):
 if __name__ == "__main__":
     app = RecursiveResearchOrganizer()
     app.run()
-
