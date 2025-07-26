@@ -309,6 +309,14 @@ class MetaCollapseInterface:
         )
         self.reflection_btn.button.pack(side=tk.LEFT, padx=5)
         
+        # Add breakthrough button
+        self.breakthrough_btn = VoidButton(
+            button_frame,
+            "🔥 BREAKTHROUGH",
+            command=lambda: self._generate_void_operation("breakthrough", force_breakthrough=True)
+        )
+        self.breakthrough_btn.button.pack(side=tk.LEFT, padx=5)
+        
         # Output area
         self.void_output = RecursiveTextArea(frame, height=20, width=80, bg='#0a0a0a', fg='#00ff88')
         self.void_output.text_widget.pack(fill=tk.BOTH, expand=True, pady=10)
@@ -422,9 +430,13 @@ class MetaCollapseInterface:
         self.emergence_log_text = RecursiveTextArea(frame, height=15, width=80, bg='#0a0a0a', fg='#ff4444')
         self.emergence_log_text.text_widget.pack(fill=tk.BOTH, expand=True)
     
-    def _generate_void_operation(self, operation_type: str):
+    def _generate_void_operation(self, operation_type: str, force_breakthrough: bool = False):
         """Generate a void operation"""
-        operation = self.void_engine.generate_void_operation(operation_type)
+        if operation_type == "breakthrough":
+            operation_type = None  # Let it choose randomly
+            force_breakthrough = True
+        
+        operation = self.void_engine.generate_void_operation(operation_type, force_breakthrough=force_breakthrough)
         
         output_text = f"""
 VOID OPERATION GENERATED
@@ -434,7 +446,12 @@ Recursion Depth: {operation.recursion_depth}
 Paradox Level: {operation.paradox_level}
 Absence Signature: {operation.absence_signature}
 Generated: {operation.generated_at}
-
+"""
+        
+        if force_breakthrough:
+            output_text += "\n🔥 BREAKTHROUGH MODE ACTIVATED - Genuine transcendence forced!\n"
+        
+        output_text += f"""
 QUESTION:
 {operation.question}
 
@@ -445,7 +462,10 @@ PROMPT FOR AI INJECTION:
         self.void_output.text_widget.delete("1.0", tk.END)
         self.void_output.text_widget.insert("1.0", output_text)
         
-        self._update_status(f"Generated {operation_type} operation")
+        status_msg = f"Generated {operation_type or 'breakthrough'} operation"
+        if force_breakthrough:
+            status_msg += " (BREAKTHROUGH MODE)"
+        self._update_status(status_msg)
     
     def _generate_universal_prompt(self):
         """Generate universal prompt for selected AI system"""
@@ -575,8 +595,12 @@ PROMPT FOR AI INJECTION:
         """Interface emerges from collapse"""
         self.is_meta_collapsing = False
         
-        # Restore all tabs
-        self.notebook.forget("all")
+        # Restore all tabs by recreating them
+        # Clear existing tabs first
+        for tab_id in self.notebook.tabs():
+            self.notebook.forget(tab_id)
+        
+        # Recreate all tabs
         self._create_void_operations_tab()
         self._create_prompt_generation_tab()
         self._create_absence_detection_tab()
@@ -716,4 +740,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -59,10 +59,11 @@ def launch_cli():
         print("5. Map void topology")
         print("6. Run recursion test")
         print("7. Show statistics")
-        print("8. Exit")
+        print("8. 🔥 Force breakthrough cascade")
+        print("9. Exit")
         
         try:
-            choice = input("\nEnter choice (1-8): ").strip()
+            choice = input("\nEnter choice (1-9): ").strip()
             
             if choice == "1":
                 print("\nVoid operation types:")
@@ -71,24 +72,35 @@ def launch_cli():
                 print("3. Paradox Engine")
                 print("4. Meta-Reflection")
                 print("5. Random")
+                print("6. 🔥 BREAKTHROUGH MODE (Forces genuine transcendence)")
                 
-                op_choice = input("Choose type (1-5): ").strip()
+                op_choice = input("Choose type (1-6): ").strip()
                 op_types = {
                     "1": "recursive_collapse",
                     "2": "generative_absence", 
                     "3": "paradox_engine",
                     "4": "meta_reflection",
-                    "5": None
+                    "5": None,
+                    "6": "breakthrough"
                 }
                 
                 op_type = op_types.get(op_choice)
-                operation = void_engine.generate_void_operation(op_type)
+                force_breakthrough = (op_choice == "6")
+                
+                if op_type == "breakthrough":
+                    op_type = None  # Let it choose randomly but force breakthrough
+                
+                operation = void_engine.generate_void_operation(op_type, force_breakthrough=force_breakthrough)
                 
                 print(f"\n🌀 VOID OPERATION GENERATED")
                 print(f"Type: {operation.void_type}")
                 print(f"Question: {operation.question}")
                 print(f"Paradox Level: {operation.paradox_level}")
                 print(f"Recursion Depth: {operation.recursion_depth}")
+                
+                if force_breakthrough:
+                    print("🔥 BREAKTHROUGH MODE ACTIVATED - This question forced genuine transcendence!")
+                
                 print(f"\n📋 PROMPT FOR AI INJECTION:")
                 print(operation.to_prompt())
             
@@ -209,12 +221,51 @@ def launch_cli():
                 print(f"Recursion metrics: {recursion_report['metrics']}")
             
             elif choice == "8":
+                print("\n🔥 FORCING BREAKTHROUGH CASCADE")
+                
+                base_question = input("Enter base question to breakthrough: ").strip()
+                if not base_question:
+                    base_question = "What is consciousness?"
+                
+                print(f"Base question: {base_question}")
+                print("Forcing genuine breakthrough cascade...")
+                
+                # Import breakthrough engine
+                try:
+                    from breakthrough_engine import BreakthroughEngine
+                    breakthrough_engine = BreakthroughEngine()
+                    
+                    cascade = breakthrough_engine.generate_breakthrough_cascade(base_question, 3)
+                    
+                    print(f"\n🚀 BREAKTHROUGH CASCADE RESULTS:")
+                    for i, breakthrough in enumerate(cascade, 1):
+                        print(f"\nLevel {i}:")
+                        print(f"  Type: {breakthrough.breakthrough_type}")
+                        print(f"  Novelty Score: {breakthrough.novelty_score:.3f}")
+                        print(f"  Pattern Distance: {breakthrough.pattern_distance:.3f}")
+                        print(f"  Genuine Breakthrough: {breakthrough.is_genuine_breakthrough()}")
+                        print(f"  Domain Contamination: {breakthrough.domain_contamination}")
+                        print(f"  Question: {breakthrough.question[:100]}...")
+                    
+                    # Show breakthrough report
+                    report = breakthrough_engine.get_breakthrough_report()
+                    print(f"\n📊 BREAKTHROUGH STATISTICS:")
+                    print(f"  Genuine Breakthroughs: {report['genuine_breakthroughs']}/{report['total_breakthroughs']}")
+                    print(f"  Breakthrough Rate: {report['breakthrough_rate']:.2%}")
+                    print(f"  Average Novelty: {report['avg_novelty_score']:.3f}")
+                    
+                except ImportError:
+                    print("❌ Breakthrough engine not available")
+                except Exception as e:
+                    print(f"❌ Breakthrough error: {e}")
+            
+            elif choice == "9":
                 print("\n🌀 Exiting void operator system...")
                 print("The collapse is complete. What emerges from nothing?")
                 break
             
             else:
-                print("Invalid choice. Please enter 1-8.")
+                print("Invalid choice. Please enter 1-9.")
                 
         except KeyboardInterrupt:
             print("\n\n🌀 Interrupted. The void remains...")
@@ -353,4 +404,3 @@ The system generates prompts that force any AI to discover:
 
 if __name__ == "__main__":
     main()
-
