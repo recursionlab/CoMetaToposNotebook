@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta-Ouroboros: Unbreakable Knowledge Evolution</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 60px 1fr 100px;
+            height: 100vh;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .status {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .status-item {
+            padding: 5px 10px;
+            background: rgba(0, 255, 136, 0.2);
+            border-radius: 5px;
+            border: 1px solid #00ff88;
+        }
+
+        .left-panel, .right-panel {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+        }
+
+        .main-graph {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-panel {
+            grid-column: 1 / -1;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-area {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 10px;
+            color: #00ff88;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+        }
+
+        .input-area::placeholder {
+            color: rgba(0, 255, 136, 0.5);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            color: white;
+        }
+
+        .knowledge-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .knowledge-item:hover {
+            background: rgba(0, 255, 136, 0.2);
+            transform: translateX(5px);
+        }
+
+        .generation-badge {
+            background: #00ff88;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .hash-badge {
+            background: rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        .cycle-log {
+            font-size: 12px;
+            line-height: 1.4;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .cycle-entry {
+            padding: 5px;
+            margin-bottom: 5px;
+            background: rgba(0, 255, 136, 0.05);
+            border-left: 3px solid #00ff88;
+            border-radius: 3px;
+        }
+
+        .error-message {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* Graph styles */
+        .node {
+            cursor: pointer;
+            stroke: #00ff88;
+            stroke-width: 2px;
+        }
+
+        .node.generation-0 { fill: #00ff88; }
+        .node.generation-1 { fill: #00cc6a; }
+        .node.generation-2 { fill: #009944; }
+        .node.generation-3 { fill: #006622; }
+
+        .link {
+            stroke: rgba(0, 255, 136, 0.6);
+            stroke-width: 1px;
+        }
+
+        .node-label {
+            fill: #00ff88;
+            font-size: 10px;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00cc6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="title">🐍 Meta-Ouroboros</div>
+            <div class="status">
+                <div class="status-item">Cycle: <span id="cycle-count">0</span></div>
+                <div class="status-item">Fragments: <span id="fragment-count">0</span></div>
+                <div class="status-item">Generation: <span id="max-generation">0</span></div>
+                <div class="status-item">Status: <span id="system-status">Ready</span></div>
+            </div>
+        </header>
+
+        <div class="left-panel">
+            <h3>🧠 Knowledge Fragments</h3>
+            <div id="knowledge-list"></div>
+        </div>
+
+        <div class="main-graph" id="graph-container">
+            <svg id="knowledge-graph" width="100%" height="100%"></svg>
+        </div>
+
+        <div class="right-panel">
+            <h3>🌀 Cycle Log</h3>
+            <div id="cycle-log" class="cycle-log"></div>
+            
+            <h3 style="margin-top: 20px;">⚙️ Controls</h3>
+            <button class="btn" onclick="triggerCycle()">Run Cycle</button>
+            <button class="btn" onclick="toggleAutoCycle()">Auto Cycle</button>
+            <button class="btn danger" onclick="resetSystem()">Reset</button>
+        </div>
+
+        <div class="control-panel">
+            <textarea 
+                class="input-area" 
+                id="knowledge-input" 
+                placeholder="Enter knowledge, paste text, drop files, or just type anything... The system will figure it out."
+                rows="3"
+            ></textarea>
+            <button class="btn" onclick="ingestKnowledge()">Ingest</button>
+            <button class="btn" onclick="ingestFromFile()">Upload File</button>
+            <input type="file" id="file-input" style="display: none;" accept=".txt,.pdf,.md,.json" multiple>
+        </div>
+    </div>
+
+    <script>
+        class UnbreakableMetaOuroboros {
+            constructor() {
+                this.ouroboros = null;
+                this.graph = null;
+                this.autoCycleInterval = null;
+                this.isRunning = false;
+                this.errorCount = 0;
+                this.maxErrors = 10;
+                
+                this.initializeSystem();
+                this.setupEventListeners();
+                this.createGraph();
+            }
+
+            initializeSystem() {
+                try {
+                    // Initialize the Meta-Ouroboros system
+                    this.ouroboros = {
+                        knowledge_base: [],
+                        operations: [{ type: 'SynthesisOperation', method: 'recursive_combination' }],
+                        cycle_count: 0,
+                        evolution_log: []
+                    };
+                    
+                    // Seed with initial knowledge
+                    this.seedInitialKnowledge();
+                    this.updateDisplay();
+                    this.showMessage("Meta-Ouroboros initialized successfully", 'success');
+                } catch (error) {
+                    this.handleError("Initialization failed", error);
+                }
+            }
+
+            seedInitialKnowledge() {
+                const seeds = [
+                    "Consciousness emerges from recursive self-reference",
+                    "Meta-cognition is thinking about thinking", 
+                    "Ouroboros represents eternal return and self-consumption",
+                    "Knowledge systems can evolve their own evolution"
+                ];
+
+                seeds.forEach(content => {
+                    this.ingestKnowledgeFragment(content, true);
+                });
+            }
+
+            ingestKnowledgeFragment(content, isSeed = false) {
+                try {
+                    if (!content || content.trim().length === 0) return;
+
+                    const fragment = {
+                        content: content.trim(),
+                        meta_operations: isSeed ? ['initial_seed'] : ['user_input'],
+                        meta_meta_operations: [],
+                        generation: 0,
+                        hash: this.generateHash(content),
+                        timestamp: new Date().toISOString(),
+                        id: this.generateId()
+                    };
+
+                    this.ouroboros.knowledge_base.push(fragment);
+                    this.updateDisplay();
+                    
+                    if (!isSeed) {
+                        this.showMessage(`Knowledge ingested: ${content.substring(0, 50)}...`, 'success');
+                    }
+                } catch (error) {
+                    this.handleError("Failed to ingest knowledge", error);
+                }
+            }
+
+            runOuroborosCycle() {
+                try {
+                    if (this.isRunning) return;
+                    this.isRunning = true;
+                    
+                    this.updateStatus("Running cycle...");
+                    
+                    // Simulate the Meta-Ouroboros cycle
+                    const cycleResult = this.performCycle();
+                    
+                    this.ouroboros.cycle_count++;
+                    this.ouroboros.evolution_log.push(cycleResult);
+                    
+                    this.updateDisplay();
+                    this.updateGraph();
+                    this.logCycle(cycleResult);
+                    
+                    this.updateStatus("Ready");
+                    this.isRunning = false;
+                    
+                    this.showMessage(`Cycle ${this.ouroboros.cycle_count} completed`, 'success');
+                } catch (error) {
+                    this.isRunning = false;
+                    this.handleError("Cycle execution failed", error);
+                }
+            }
+
+            performCycle() {
+                const operations = [];
+                const newFragments = [];
+
+                // Level 1: Apply operations to knowledge
+                if (this.ouroboros.knowledge_base.length >= 2) {
+                    for (let i = 0; i < this.ouroboros.knowledge_base.length - 1; i += 2) {
+                        const fragment1 = this.ouroboros.knowledge_base[i];
+                        const fragment2 = this.ouroboros.knowledge_base[i + 1];
+                        
+                        const synthesized = this.synthesizeFragments(fragment1, fragment2);
+                        newFragments.push(synthesized);
+                        operations.push(`Level1: Synthesis on fragments ${i},${i+1}`);
+                    }
+                }
+
+                // Add new fragments to knowledge base
+                this.ouroboros.knowledge_base.push(...newFragments);
+
+                // Prune to prevent infinite growth
+                if (this.ouroboros.knowledge_base.length > 20) {
+                    this.ouroboros.knowledge_base = this.ouroboros.knowledge_base
+                        .sort((a, b) => b.generation - a.generation)
+                        .slice(0, 20);
+                }
+
+                return {
+                    cycle: this.ouroboros.cycle_count + 1,
+                    timestamp: new Date().toISOString(),
+                    operations: operations,
+                    new_fragments: newFragments.length
+                };
+            }
+
+            synthesizeFragments(fragment1, fragment2) {
+                const maxGeneration = Math.max(fragment1.generation, fragment2.generation) + 1;
+                const combinedContent = `SYNTHESIS[${fragment1.content} ⊕ ${fragment2.content}] → Emergent pattern from 2 sources`;
+                
+                return {
+                    content: combinedContent,
+                    meta_operations: [...fragment1.meta_operations, ...fragment2.meta_operations, 'synthesis_recursive_combination'],
+                    meta_meta_operations: [...fragment1.meta_meta_operations, ...fragment2.meta_meta_operations],
+                    generation: maxGeneration,
+                    hash: this.generateHash(combinedContent),
+                    timestamp: new Date().toISOString(),
+                    id: this.generateId(),
+                    parents: [fragment1.id, fragment2.id]
+                };
+            }
+
+            updateDisplay() {
+                try {
+                    // Update status bar
+                    document.getElementById('cycle-count').textContent = this.ouroboros.cycle_count;
+                    document.getElementById('fragment-count').textContent = this.ouroboros.knowledge_base.length;
+                    
+                    const maxGen = Math.max(...this.ouroboros.knowledge_base.map(f => f.generation), 0);
+                    document.getElementById('max-generation').textContent = maxGen;
+
+                    // Update knowledge list
+                    this.updateKnowledgeList();
+                } catch (error) {
+                    this.handleError("Display update failed", error);
+                }
+            }
+
+            updateKnowledgeList() {
+                const listContainer = document.getElementById('knowledge-list');
+                listContainer.innerHTML = '';
+
+                // Sort by generation and recency
+                const sortedFragments = [...this.ouroboros.knowledge_base]
+                    .sort((a, b) => b.generation - a.generation || new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 10); // Show only recent 10
+
+                sortedFragments.forEach(fragment => {
+                    const item = document.createElement('div');
+                    item.className = 'knowledge-item';
+                    item.onclick = () => this.selectFragment(fragment);
+                    
+                    const preview = fragment.content.length > 80 
+                        ? fragment.content.substring(0, 80) + '...'
+                        : fragment.content;
+                    
+                    item.innerHTML = `
+                        <div>
+                            <span class="generation-badge">Gen ${fragment.generation}</span>
+                            <span class="hash-badge">${fragment.hash}</span>
+                        </div>
+                        <div style="margin-top: 5px; font-size: 12px;">${preview}</div>
+                    `;
+                    
+                    listContainer.appendChild(item);
+                });
+            }
+
+            createGraph() {
+                try {
+                    const svg = d3.select("#knowledge-graph");
+                    const container = document.getElementById('graph-container');
+                    const width = container.clientWidth;
+                    const height = container.clientHeight;
+                    
+                    svg.attr("width", width).attr("height", height);
+                    
+                    this.graph = {
+                        svg: svg,
+                        width: width,
+                        height: height,
+                        simulation: null
+                    };
+                    
+                    this.updateGraph();
+                } catch (error) {
+                    this.handleError("Graph creation failed", error);
+                }
+            }
+
+            updateGraph() {
+                try {
+                    if (!this.graph) return;
+
+                    const nodes = this.ouroboros.knowledge_base.map(fragment => ({
+                        id: fragment.id,
+                        content: fragment.content,
+                        generation: fragment.generation,
+                        hash: fragment.hash,
+                        parents: fragment.parents || []
+                    }));
+
+                    const links = [];
+                    nodes.forEach(node => {
+                        if (node.parents) {
+                            node.parents.forEach(parentId => {
+                                const parent = nodes.find(n => n.id === parentId);
+                                if (parent) {
+                                    links.push({ source: parentId, target: node.id });
+                                }
+                            });
+                        }
+                    });
+
+                    this.renderGraph(nodes, links);
+                } catch (error) {
+                    this.handleError("Graph update failed", error);
+                }
+            }
+
+            renderGraph(nodes, links) {
+                const { svg, width, height } = this.graph;
+                
+                svg.selectAll("*").remove();
+
+                const simulation = d3.forceSimulation(nodes)
+                    .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+                    .force("charge", d3.forceManyBody().strength(-300))
+                    .force("center", d3.forceCenter(width / 2, height / 2));
+
+                const link = svg.append("g")
+                    .selectAll("line")
+                    .data(links)
+                    .enter().append("line")
+                    .attr("class", "link");
+
+                const node = svg.append("g")
+                    .selectAll("circle")
+                    .data(nodes)
+                    .enter().append("circle")
+                    .attr("class", d => `node generation-${d.generation}`)
+                    .attr("r", d => 8 + d.generation * 3)
+                    .call(d3.drag()
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
+                        .on("end", dragended));
+
+                const label = svg.append("g")
+                    .selectAll("text")
+                    .data(nodes)
+                    .enter().append("text")
+                    .attr("class", "node-label")
+                    .text(d => d.hash);
+
+                node.on("click", (event, d) => {
+                    this.selectFragment(this.ouroboros.knowledge_base.find(f => f.id === d.id));
+                });
+
+                simulation.on("tick", () => {
+                    link
+                        .attr("x1", d => d.source.x)
+                        .attr("y1", d => d.source.y)
+                        .attr("x2", d => d.target.x)
+                        .attr("y2", d => d.target.y);
+
+                    node
+                        .attr("cx", d => d.x)
+                        .attr("cy", d => d.y);
+
+                    label
+                        .attr("x", d => d.x)
+                        .attr("y", d => d.y + 20);
+                });
+
+                function dragstarted(event, d) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+
+                function dragged(event, d) {
+                    d.fx = event.x;
+                    d.fy = event.y;
+                }
+
+                function dragended(event, d) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                }
+
+                this.graph.simulation = simulation;
+            }
+
+            selectFragment(fragment) {
+                try {
+                    const preview = fragment.content.length > 200 
+                        ? fragment.content.substring(0, 200) + '...'
+                        : fragment.content;
+                    
+                    this.showMessage(`Selected Fragment (Gen ${fragment.generation}): ${preview}`, 'success');
+                } catch (error) {
+                    this.handleError("Fragment selection failed", error);
+                }
+            }
+
+            logCycle(cycleResult) {
+                try {
+                    const logContainer = document.getElementById('cycle-log');
+                    const entry = document.createElement('div');
+                    entry.className = 'cycle-entry';
+                    
+                    entry.innerHTML = `
+                        <strong>Cycle ${cycleResult.cycle}</strong> - ${new Date(cycleResult.timestamp).toLocaleTimeString()}
+                        <br>Operations: ${cycleResult.operations.length}
+                        <br>New Fragments: ${cycleResult.new_fragments}
+                        <br>${cycleResult.operations.slice(0, 2).join('<br>')}
+                        ${cycleResult.operations.length > 2 ? '<br>...' : ''}
+                    `;
+                    
+                    logContainer.insertBefore(entry, logContainer.firstChild);
+                    
+                    // Keep only last 10 entries
+                    while (logContainer.children.length > 10) {
+                        logContainer.removeChild(logContainer.lastChild);
+                    }
+                } catch (error) {
+                    this.handleError("Cycle logging failed", error);
+                }
+            }
+
+            setupEventListeners() {
+                try {
+                    // File input handler
+                    document.getElementById('file-input').addEventListener('change', (e) => {
+                        this.handleFileUpload(e.target.files);
+                    });
+
+                    // Keyboard shortcuts
+                    document.addEventListener('keydown', (e) => {
+                        if (e.ctrlKey || e.metaKey) {
+                            switch(e.key) {
+                                case 'Enter':
+                                    e.preventDefault();
+                                    this.ingestKnowledge();
+                                    break;
+                                case ' ':
+                                    e.preventDefault();
+                                    this.runOuroborosCycle();
+                                    break;
+                            }
+                        }
+                    });
+
+                    // Window resize handler
+                    window.addEventListener('resize', () => {
+                        this.createGraph();
+                    });
+
+                    // Auto-save state
+                    setInterval(() => {
+                        this.saveState();
+                    }, 30000); // Save every 30 seconds
+
+                    // Load saved state
+                    this.loadState();
+                } catch (error) {
+                    this.handleError("Event listener setup failed", error);
+                }
+            }
+
+            handleFileUpload(files) {
+                try {
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const content = e.target.result;
+                            this.ingestKnowledgeFragment(`File: ${file.name}\n\n${content}`);
+                        };
+                        reader.readAsText(file);
+                    });
+                } catch (error) {
+                    this.handleError("File upload failed", error);
+                }
+            }
+
+            toggleAutoCycle() {
+                try {
+                    if (this.autoCycleInterval) {
+                        clearInterval(this.autoCycleInterval);
+                        this.autoCycleInterval = null;
+                        this.showMessage("Auto-cycle disabled", 'success');
+                    } else {
+                        this.autoCycleInterval = setInterval(() => {
+                            if (!this.isRunning) {
+                                this.runOuroborosCycle();
+                            }
+                        }, 5000); // Every 5 seconds
+                        this.showMessage("Auto-cycle enabled (5s intervals)", 'success');
+                    }
+                } catch (error) {
+                    this.handleError("Auto-cycle toggle failed", error);
+                }
+            }
+
+            resetSystem() {
+                try {
+                    if (confirm("Are you sure you want to reset the Meta-Ouroboros? This will clear all knowledge and cycles.")) {
+                        if (this.autoCycleInterval) {
+                            clearInterval(this.autoCycleInterval);
+                            this.autoCycleInterval = null;
+                        }
+                        
+                        this.initializeSystem();
+                        this.createGraph();
+                        document.getElementById('cycle-log').innerHTML = '';
+                        this.showMessage("System reset successfully", 'success');
+                    }
+                } catch (error) {
+                    this.handleError("System reset failed", error);
+                }
+            }
+
+            updateStatus(status) {
+                document.getElementById('system-status').textContent = status;
+            }
+
+            showMessage(message, type = 'info') {
+                try {
+                    // Create message element
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+                    messageDiv.textContent = message;
+                    
+                    // Add to top of left panel temporarily
+                    const leftPanel = document.querySelector('.left-panel');
+                    leftPanel.insertBefore(messageDiv, leftPanel.firstChild);
+                    
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        if (messageDiv.parentNode) {
+                            messageDiv.parentNode.removeChild(messageDiv);
+                        }
+                    }, 3000);
+                } catch (error) {
+                    console.error("Failed to show message:", error);
+                }
+            }
+
+            handleError(context, error) {
+                this.errorCount++;
+                console.error(`${context}:`, error);
+                
+                if (this.errorCount < this.maxErrors) {
+                    this.showMessage(`${context}: ${error.message || error}`, 'error');
+                    
+                    // Try to recover
+                    setTimeout(() => {
+                        try {
+                            this.updateDisplay();
+                        } catch (recoveryError) {
+                            console.error("Recovery failed:", recoveryError);
+                        }
+                    }, 1000);
+                } else {
+                    this.showMessage("Too many errors. System entering safe mode.", 'error');
+                    this.updateStatus("Safe Mode");
+                }
+            }
+
+            saveState() {
+                try {
+                    const state = {
+                        ouroboros: this.ouroboros,
+                        timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem('meta-ouroboros-state', JSON.stringify(state));
+                } catch (error) {
+                    console.warn("Failed to save state:", error);
+                }
+            }
+
+            loadState() {
+                try {
+                    const saved = localStorage.getItem('meta-ouroboros-state');
+                    if (saved) {
+                        const state = JSON.parse(saved);
+                        if (state.ouroboros && state.ouroboros.knowledge_base) {
+                            this.ouroboros = state.ouroboros;
+                            this.updateDisplay();
+                            this.showMessage("Previous state restored", 'success');
+                        }
+                    }
+                } catch (error) {
+                    console.warn("Failed to load state:", error);
+                }
+            }
+
+            generateHash(content) {
+                // Simple hash function
+                let hash = 0;
+                for (let i = 0; i < content.length; i++) {
+                    const char = content.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32-bit integer
+                }
+                return Math.abs(hash).toString(16).substring(0, 8);
+            }
+
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+        }
+
+        // Global functions for buttons
+        let metaOuroboros;
+
+        function ingestKnowledge() {
+            const input = document.getElementById('knowledge-input');
+            const content = input.value.trim();
+            if (content) {
+                metaOuroboros.ingestKnowledgeFragment(content);
+                input.value = '';
+            }
+        }
+
+        function ingestFromFile() {
+            document.getElementById('file-input').click();
+        }
+
+        function triggerCycle() {
+            metaOuroboros.runOuroborosCycle();
+        }
+
+        function toggleAutoCycle() {
+            metaOuroboros.toggleAutoCycle();
+        }
+
+        function resetSystem() {
+            metaOuroboros.resetSystem();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            metaOuroboros = new UnbreakableMetaOuroboros();
+        });
+
+        // Handle enter key in textarea
+        document.addEventListener('DOMContentLoaded', () => {
+            const textarea = document.getElementById('knowledge-input');
+            textarea.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    ingestKnowledge();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
