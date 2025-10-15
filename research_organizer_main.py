@@ -237,7 +237,7 @@ This is NOT recursive theater - this is actual self-modifying code.
     args = parser.parse_args()
     
     # Print header
-    print("🧬 RECURSIVE COLLISION CHAMBER")
+    print("RECURSIVE COLLISION CHAMBER")
     print("=" * 60)
     print("Self-modifying research organizer with REAL code evolution")
     print("Not recursive theater - genuine runtime self-modification")

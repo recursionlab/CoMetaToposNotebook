@@ -90,7 +90,7 @@ class RecursiveCollisionChamber:
         self.evolution_queue = queue.Queue()
         self.evolution_thread.start()
         
-        logger.info("🧬 Recursive Collision Chamber initialized with self-modification capabilities")
+        logger.info("Recursive Collision Chamber initialized with self-modification capabilities")
     
     def _bootstrap_initial_methods(self):
         """Bootstrap with basic collision detection methods"""
@@ -151,7 +151,7 @@ class RecursiveCollisionChamber:
         setattr(self.__class__, 'concept_bridge_v0', concept_bridge_v0)
         self.generated_methods.add('concept_bridge_v0')
         
-        logger.info("🌱 Bootstrapped with 2 initial collision methods")
+        logger.info("Bootstrapped with 2 initial collision methods")
     
     def add_artifact(self, content: str, content_type: str = "text", metadata: Dict = None) -> str:
         """Add a research artifact to the chamber"""
@@ -170,7 +170,7 @@ class RecursiveCollisionChamber:
         # Trigger collision detection
         self._detect_collisions_for_new_artifact(artifact)
         
-        logger.info(f"📄 Added artifact {artifact.id} ({content_type})")
+        logger.info(f"Added artifact {artifact.id} ({content_type})")
         return artifact.id
     
     def _extract_concepts(self, content: str) -> List[str]:
@@ -215,10 +215,10 @@ class RecursiveCollisionChamber:
                 
                 if significant_results:
                     self.last_significant_discovery = time.time()
-                    logger.info(f"⚡ {method_name} found {len(significant_results)} significant collisions")
+                    logger.info(f"{method_name} found {len(significant_results)} significant collisions")
                 
             except Exception as e:
-                logger.error(f"❌ Method {method_name} failed: {e}")
+                logger.error(f"Method {method_name} failed: {e}")
                 self.failure_count += 1
                 
                 # Trigger adaptation if too many failures
@@ -227,7 +227,7 @@ class RecursiveCollisionChamber:
     
     def _trigger_adaptation(self):
         """Trigger system adaptation due to failures or stagnation"""
-        logger.info("🔄 Triggering system adaptation due to failures/stagnation")
+        logger.info("Triggering system adaptation due to failures/stagnation")
         
         # Queue evolution task
         self.evolution_queue.put({
@@ -252,14 +252,14 @@ class RecursiveCollisionChamber:
                 
                 # Check for stagnation
                 if time.time() - self.last_significant_discovery > self.stagnation_threshold:
-                    logger.info("🕰️ Stagnation detected - triggering evolution")
+                    logger.info("Stagnation detected - triggering evolution")
                     self._evolve_collision_methods()
                     self.last_significant_discovery = time.time()
                 
                 time.sleep(5)  # Check every 5 seconds
                 
             except Exception as e:
-                logger.error(f"❌ Evolution thread error: {e}")
+                logger.error(f"Evolution thread error: {e}")
                 time.sleep(10)
     
     def _execute_evolution_task(self, task: Dict):
@@ -302,14 +302,14 @@ class RecursiveCollisionChamber:
                     'code': new_method_code
                 })
                 
-                logger.info(f"🧬 Generated new method: {method_name}")
+                logger.info(f"Generated new method: {method_name}")
                 
                 # Remove worst performing method if we have too many
                 if len(self.generated_methods) > 10:
                     self._prune_methods()
                 
             except Exception as e:
-                logger.error(f"❌ Failed to generate method: {e}")
+                logger.error(f"Failed to generate method: {e}")
                 self.failure_count += 1
     
     def _analyze_method_performance(self) -> List[str]:
@@ -384,7 +384,7 @@ def evolved_collision_v{self.generation_count}_impl(self, artifacts):
                 strength += concept_density * 0.3
                 
                 if concept_density > 0.3:
-                    connection_insights.append(f"Concepts: {{:.2f}}".format(concept_density))
+                    connection_insights.append("Concepts: {:.2f}".format(concept_density))
             
             # Pattern 3: Evolutionary novelty detection
             content_lengths = [len(art1.raw_content), len(art2.raw_content)]
@@ -438,14 +438,14 @@ def evolved_collision_v{self.generation_count}_impl(self, artifacts):
                 if hasattr(self.__class__, method_name):
                     setattr(self.__class__, f"deprecated_{method_name}", getattr(self.__class__, method_name))
                 
-                logger.info(f"🗑️ Pruned method: {method_name}")
+                logger.info(f"Pruned method: {method_name}")
     
     def _inject_failure(self):
         """Inject random failures to test system robustness"""
         if random.random() < 0.3:
             # Simulate method failure
             method_name = random.choice(list(self.generated_methods))
-            logger.info(f"💣 Injecting failure in {method_name}")
+            logger.info(f"Injecting failure in {method_name}")
             
             # Temporarily break the method
             original_method = getattr(self.__class__, method_name)
@@ -459,7 +459,7 @@ def evolved_collision_v{self.generation_count}_impl(self, artifacts):
             def restore_method():
                 time.sleep(5)
                 setattr(self.__class__, method_name, original_method)
-                logger.info(f"🔧 Restored {method_name}")
+                logger.info(f"Restored {method_name}")
             
             threading.Thread(target=restore_method, daemon=True).start()
     
@@ -486,7 +486,7 @@ def evolved_collision_v{self.generation_count}_impl(self, artifacts):
     
     def force_evolution(self):
         """Manually trigger system evolution"""
-        logger.info("🔄 Manually triggering evolution")
+        logger.info("Manually triggering evolution")
         self.evolution_queue.put({
             'type': 'adapt',
             'reason': 'manual_trigger',
@@ -496,7 +496,7 @@ def evolved_collision_v{self.generation_count}_impl(self, artifacts):
     
     def inject_chaos(self):
         """Manually inject chaos for testing"""
-        logger.info("💣 Manually injecting chaos")
+        logger.info("Manually injecting chaos")
         self.evolution_queue.put({
             'type': 'inject_failure',
             'reason': 'manual_chaos'
@@ -508,12 +508,12 @@ def evolved_collision_v{self.generation_count}_impl(self, artifacts):
     
     def shutdown(self):
         """Gracefully shutdown the system"""
-        logger.info("🛑 Shutting down Recursive Collision Chamber")
+        logger.info("Shutting down Recursive Collision Chamber")
         # Evolution thread is daemon, so it will stop automatically
 
 def demonstrate_recursive_collision_chamber():
     """Demonstrate the recursive collision chamber in action"""
-    print("🧬 RECURSIVE COLLISION CHAMBER DEMONSTRATION")
+    print("RECURSIVE COLLISION CHAMBER DEMONSTRATION")
     print("=" * 70)
     print("Real self-modifying research organizer with dynamic code evolution")
     print()
@@ -522,7 +522,7 @@ def demonstrate_recursive_collision_chamber():
     chamber = RecursiveCollisionChamber()
     
     # Add some test artifacts
-    print("📄 Adding research artifacts...")
+    print("Adding research artifacts...")
     
     artifacts = [
         ("Quantum mechanics is a fundamental theory in physics that describes the behavior of matter and energy at the atomic and subatomic level.", "text"),
@@ -537,7 +537,7 @@ def demonstrate_recursive_collision_chamber():
         print(f"  Added: {artifact_id}")
         time.sleep(1)  # Allow processing
     
-    print(f"\n⚡ Initial collision detection complete")
+    print(f"\nInitial collision detection complete")
     
     # Show initial results
     significant_collisions = chamber.get_significant_collisions()
@@ -547,19 +547,19 @@ def demonstrate_recursive_collision_chamber():
         print(f"  • {collision.connection_type}: {collision.insight[:60]}... (strength: {collision.strength:.2f})")
     
     # Show system status
-    print(f"\n📊 System Status:")
+    print(f"\nSystem Status:")
     status = chamber.get_system_status()
     for key, value in status.items():
         if key != 'method_performance':
             print(f"  {key}: {value}")
     
     # Force evolution
-    print(f"\n🔄 Forcing system evolution...")
+    print(f"\nForcing system evolution...")
     chamber.force_evolution()
     time.sleep(3)  # Allow evolution to complete
     
     # Add more artifacts to trigger new methods
-    print(f"\n📄 Adding more artifacts to test evolved methods...")
+    print(f"\nAdding more artifacts to test evolved methods...")
     new_artifacts = [
         ("Artificial intelligence systems are becoming increasingly sophisticated, raising questions about consciousness and machine awareness.", "text"),
         ("Quantum computing leverages quantum mechanical phenomena to process information in fundamentally new ways.", "text")
@@ -571,7 +571,7 @@ def demonstrate_recursive_collision_chamber():
         time.sleep(1)
     
     # Show evolved results
-    print(f"\n🧬 Results after evolution:")
+    print(f"\nResults after evolution:")
     new_status = chamber.get_system_status()
     print(f"  Active methods: {new_status['active_methods']}")
     print(f"  Generation count: {new_status['generation_count']}")
@@ -580,18 +580,18 @@ def demonstrate_recursive_collision_chamber():
     # Show evolution history
     evolution_history = chamber.get_evolution_history()
     if evolution_history:
-        print(f"\n📈 Evolution History:")
+        print(f"\nEvolution History:")
         for evolution in evolution_history:
             print(f"  Generation {evolution['generation']}: {evolution['method_name']}")
             print(f"    Based on: {evolution['based_on']}")
             print(f"    Replaced: {evolution['replaced']}")
     
     # Inject chaos for testing
-    print(f"\n💣 Testing chaos injection...")
+    print(f"\nTesting chaos injection...")
     chamber.inject_chaos()
     time.sleep(2)
     
-    print(f"\n✅ Demonstration complete!")
+    print(f"\nDemonstration complete!")
     print(f"The system has genuinely evolved its own collision detection methods.")
     
     # Shutdown
